@@ -20,6 +20,13 @@ const isValidObjectId = function (objectId) {
   };
 
 
+const isValidString = function (value) {
+  if (typeof value === "string" && value.trim().length === 0) return false;
+  return true;
+};
+
+
+
 const createBook = async function (req, res) {
 
     try {
@@ -121,4 +128,41 @@ const createBook = async function (req, res) {
     
 }
 
+
+const getBooks = async function (req, res) {
+    try {
+        let queryParams = req.query;
+      let filterQuery = {...queryParams, isDeleted: false, deletedAt: null };
+
+      const {userId, category, subcategory}=  queryParams
+     
+     
+      if(!isValidString(userId)) {
+        return res.status(400).send({ status: false, msg: "userId field cannot be empty" })
+     }
+
+
+     if (!isValidString(category)) {
+        return res.status(400).send({ status: false, msg: "please provide category field." })
+    }
+
+    if (!isValidString(subcategory)) {
+        return res.status(400).send({ status: false, msg: "please provide subcategory field." })
+    }
+
+
+
+      const books = await bookModel.find(filterQuery).select({title:1,excerpt:1,userId:1,category:1,releasedAt:1,reviews:1}).sort({title:1});
+  
+      if (!isValid(books)) {
+        return res.status(404).send({ status: false, message: "No booksfound" });
+      }
+      res.status(200).send({ status: true, message: "Books list", data: books });
+    } catch (error) {
+      res.status(500).send({ status: false, Error: error.message });
+    }
+  };
+  
+
 module.exports.createBook=createBook;
+module.exports.getBooks=getBooks;

@@ -11,9 +11,9 @@ router.post("/register",UserController.createUser)
 router.post("/login", LoginController.loginUser)
 router.post("/books",Middleware.loginCheck, BookController.createBook )
 
+//**************************************GET API*****************************************************/
 
-
-
+router.get("/books", BookController.getBooks)
 
 
 
