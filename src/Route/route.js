@@ -3,9 +3,10 @@ const router = express.Router()
 
 
 const UserController= require("../controllers/userController")
+const LoginController= require("../controllers/loginUser")
 
 router.post("/register",UserController.createUser)
-router.post("/login",UserController.loginUser)
+router.post("/login", LoginController.loginUser)
 
 
 
