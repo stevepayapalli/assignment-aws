@@ -13,7 +13,7 @@ router.post("/books",Middleware.loginCheck, BookController.createBook )
 
 //**************************************GET API*****************************************************/
 
-router.get("/books", BookController.getBooks)
+router.get("/books", Middleware.loginCheck, BookController.getBooks)
 
 
 
