@@ -146,7 +146,7 @@ const loginUser = async function (req, res) {
      userId: user._id,
     email: user._email
     
-    }, "bookprojectGroup19", { expiresIn: "5hr" }
+    }, "bookprojectGroup19", { expiresIn: "15min" }
     
     );
     res.status(200).setHeader("x-api-key", token);
