@@ -15,6 +15,9 @@ router.post("/books",Middleware.loginCheck, BookController.createBook )//1
 
 router.get("/books", Middleware.loginCheck, BookController.getBooks)//2
 router.get("/books/:bookId",  Middleware.loginCheck,BookController.getBookDetailsById )//3
+router.put("/books/:bookId",  Middleware.loginCheck,BookController.updateDetails )//3
+router.delete("/books/:bookId",  Middleware.loginCheck,BookController.deleteBookById )//3
+
 
 
 
