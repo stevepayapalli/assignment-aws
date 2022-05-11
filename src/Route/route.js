@@ -9,12 +9,12 @@ const Middleware= require("../middleware/authorization")
 
 router.post("/register",UserController.createUser)
 router.post("/login", LoginController.loginUser)
-router.post("/books",Middleware.loginCheck, BookController.createBook )
+router.post("/books",Middleware.loginCheck, BookController.createBook )//1
 
 //**************************************GET API*****************************************************/
 
-router.get("/books", Middleware.loginCheck, BookController.getBooks)
-
+router.get("/books", Middleware.loginCheck, BookController.getBooks)//2
+router.get("/books/:bookId",  Middleware.loginCheck,BookController.getBookDetailsById )//3
 
 
 

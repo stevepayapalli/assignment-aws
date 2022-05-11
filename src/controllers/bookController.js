@@ -110,6 +110,7 @@ const createBook = async function (req, res) {
 
 
         data.releasedAt = moment().format("YYYY-MM-DD")
+
         if (userId !== req.userId) {
 
             return res.status(400).send({
@@ -155,7 +156,7 @@ const getBooks = async function (req, res) {
 
         let validUserId = await bookModel.findOne({ $or: [ { userId: userId }, { category: category }, {subcategory: subcategory} ] })
 
-        console.log(validUserId)
+        //console.log(validUserId)
 
         if (validUserId.userId != req.userId) {
 
@@ -178,8 +179,50 @@ const getBooks = async function (req, res) {
     }
 };
 
+const getBookDetailsById = async (req, res) => {
+    try {
+        const bookId = req.params.bookId
+
+        if (!isValid(bookId)) {
+            return res.status(400).send({ status: false, message: 'Please provide valid bookId' })
+        }
+
+        if(Object.keys(bookId)) return res.status(400).send({status: false, msg:"data is missing from params"})
+
+        const book = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ ISBN: 0, __v: 0 })
+        // console.log(book)
+        if (!book) {
+            return res.status(404).send({ status: false, message: 'No book found' })
+        }
+
+        if (book.userId != req.userId) {
+
+            return res.status(400).send({
+                status: false,
+                message: 'Unauthorised Access. Please login again!',
+            });
+        }
+
+       let {...data} = book._doc
+
+       data.reviewsData = [] 
+
+        return res.status(200).send({ status: true, message: 'Books list', data: data})
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ status: false, error: err.message });
+    }
+}
+
+
+
+
+
+
 
 
 
 module.exports.createBook = createBook;
 module.exports.getBooks = getBooks;
+
+module.exports.getBookDetailsById = getBookDetailsById
