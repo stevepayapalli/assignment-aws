@@ -134,7 +134,7 @@ const getBooks = async function (req, res) {
     try {
         let queryParams = req.query;
 
-        if (Object.keys(queryParams).length == 0) return res.status(400).send({ status: false, msg: "Please Provide Data in Query" })
+        if (!isValidRequestBody(queryParams)) return res.status(400).send({ status: false, msg: "Please Provide Data in params" })
 
         let filterQuery = { ...queryParams, isDeleted: false, deletedAt: null };
 
@@ -183,11 +183,13 @@ const getBookDetailsById = async (req, res) => {
     try {
         const bookId = req.params.bookId
 
+    
+
         if (!isValid(bookId)) {
             return res.status(400).send({ status: false, message: 'Please provide valid bookId' })
         }
 
-        if(Object.keys(bookId)) return res.status(400).send({status: false, msg:"data is missing from params"})
+        if(!isValidRequestBody(bookId)) return res.status(400).send({status: false, msg:"Please Provide Data in params"})
 
         const book = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ ISBN: 0, __v: 0 })
         // console.log(book)
