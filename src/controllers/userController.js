@@ -1,34 +1,22 @@
 const userModel = require("../models/userModel");
 const EmailValidator=require('email-validator');
 const jwt = require("jsonwebtoken")
+const Validator= require("../validator/validation")
 
 
-const isValid = function (value) {
-    if (typeof value === "undefined" || value === null) return false;
-    if (typeof value === "string" && value.trim().length === 0) return false;
-    return true; 
-  };
-
-  const isValidRequestBody = function (requestBody) {
-    return Object.keys(requestBody).length > 0; 
-  };
-
-  const isValidTitle = function (title) {
-    return ["Mr", "Mrs", "Miss"].indexOf(title) !== -1;
-  };
-
+  
   const createUser= async function (req, res) {
      try {
       let data= req.body
       const {title, name, phone, email, password, address}= data
 
-      if (!isValidRequestBody(data)) {
+      if (!Validator.isValidRequestBody(data)) {
           return res.status(400).send({status: false, msg: "please provide some data"})
       }
       if (!title) {
         return res.status(400).send({status: false, msg: "please provide title field."})
       }
-    if (!isValidTitle(title)) {
+    if (!Validator.isValidTitle(title)) {
         return res.status(400).send({status: false, msg: "please provide valid title."})
     }
 
@@ -36,7 +24,7 @@ const isValid = function (value) {
         return res.status(400).send({status: false, msg: "please provide name."})
     }
     
-    if(!isValid(name)) {
+    if(!Validator.isValid(name)) {
         return res.status(400).send({status: false, msg: "please provide valid name."})
     }
 
@@ -77,11 +65,11 @@ const isValid = function (value) {
     if(!address) {
         return res.status(400).send({ status: false, msg: "please provide address " })
     }
-    if (!isValidRequestBody(address) ){
+    if (!Validator.isValidRequestBody(address) ){
     return res.status(400).send({ status: false, msg: "please provide address in detail" })
     }
 
-    if(!isValid(address)) {
+    if(!Validator.isValid(address)) {
         return res.status(400).send({ status: false, msg: "address cannot be empty" })
     }
     
@@ -89,7 +77,7 @@ const isValid = function (value) {
         return res.status(400).send({ status: false, msg: "please provide street field." })
     }
 
-    if(!isValid(address.street)) {
+    if(!Validator.isValid(address.street)) {
         return res.status(400).send({ status: false, msg: "address cannot be empty" })
     }
 
@@ -97,7 +85,7 @@ const isValid = function (value) {
         return res.status(400).send({ status: false, msg: "please provide city field." })
     }
 
-    if(!isValid(address.city)) {
+    if(!Validator.isValid(address.city)) {
         return res.status(400).send({ status: false, msg: "city cannot be empty" })
     }
 
@@ -105,7 +93,7 @@ const isValid = function (value) {
         return res.status(400).send({ status: false, msg: "please provide pincode field." })
     }
 
-    if(!isValid(address.pincode)) {
+    if(!Validator.isValid(address.pincode)) {
         return res.status(400).send({ status: false, msg: "pincode cannot be empty" })
     }
 
@@ -129,16 +117,22 @@ const loginUser = async function (req, res) {
     let body = req.body
     if (Object.keys(body) != 0) {
     let userName = req.body.email;
-    let passwords = req.body.password;
+    let passwords = req.body.password; 
     if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(userName))) { return res.status(400).send({ status: false, msg: "Please provide a valid email" }) }
     if (!(/^[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(passwords))) {
     return res.status(400).send({ status: false, msg: "please provide valid password with one uppercase letter ,one lowercase, one character and one number " })
     }
-    let user = await userModel.findOne({ email: userName, password: passwords });
+    let user = await userModel.findOne({ email: userName});
+
+
     
     if (!user) {
     return res.status(400).send({
-    status: false,msg: "username or the password is not correct" });
+    status: false,msg: "email is not correct" });
+    }
+
+    if (user.password != passwords) {
+        return res.status(400).send({status: false, msg: "password is not correct"})
     }
     
     let token = jwt.sign(
@@ -146,7 +140,7 @@ const loginUser = async function (req, res) {
      userId: user._id,
     email: user._email
     
-    }, "bookprojectGroup19", { expiresIn: "15min" }
+    }, "bookprojectGroup19", { expiresIn: "5hrs" }
     
     );
     res.status(200).setHeader("x-api-key", token);
@@ -167,4 +161,4 @@ const loginUser = async function (req, res) {
 
 
 module.exports.createUser=createUser;
-//kkk
+module.exports.loginUser=loginUser;
