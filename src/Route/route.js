@@ -11,6 +11,7 @@ router.post("/register",UserController.createUser)
 router.post("/login", UserController.loginUser)
 router.post("/books",Middleware.loginCheck, BookController.createBook)//1
 router.post("/books/:bookId/review", ReviewController.createReviewByBookId)//1
+router.put("/books/:bookId/review/:reviewId", ReviewController.updateReviews)
 
 //**************************************GET API*****************************************************/
 

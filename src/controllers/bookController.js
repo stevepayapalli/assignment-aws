@@ -168,7 +168,7 @@ const getBookDetailsById = async (req, res) => {
 
         if(!Validator.isValidRequestBody(bookId)) return res.status(400).send({status: false, msg:"Please Provide Data in params"})
 
-        const book = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ ISBN: 0, __v: 0 })
+        const book = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ ISBN: 0, __v: 0, isDeleted:0 })
         // console.log(book)
         if (!book) {
             return res.status(404).send({ status: false, message: 'No book found' })
