@@ -73,20 +73,14 @@ const updateReviews = async function (req, res) {
   
       
       if (!Validator.isValidObjectId(bookId)) {
-        return res
-          .status(400)
-          .send({ status: false, message: `bookId is missing.` });
+        return res.status(400).send({ status: false, message: `bookId is missing.` });
       }
       if (!Validator.isValidObjectId(reviewId)) {
-        return res
-          .status(400)
-          .send({ status: false, message: `reviewId is missing.` });
+        return res.status(400).send({ status: false, message: `reviewId is missing.` });
       }
   
       if (!Validator.isValidString(review)) {
-        return res
-          .status(400)
-          .send({ status: false, message: "Review is required for updatation." });
+        return res.status(400).send({ status: false, message: "Review is required for updatation." });
       }
 
   
@@ -94,12 +88,9 @@ const updateReviews = async function (req, res) {
         return res.status(400).send({ status: false, message: ' please provide rating between 1 to 5' })
     }
 
-  
      
       if (!Validator.isValidString(reviewedBy)) {
-        return res
-          .status(400)
-          .send({ status: false, message: "reviewedBy is required for updatation." });
+        return res.status(400).send({ status: false, message: "reviewedBy is required for updatation." });
       }
 
 
