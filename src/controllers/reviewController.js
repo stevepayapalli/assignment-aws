@@ -134,42 +134,46 @@ const updateReviews = async function (req, res) {
   };
 
 
-  const deleteBookById = async function (req, res) {
+  const deleteReview = async function (req, res) {
     try {
-      let userIdFromToken = req.userId;
-      let id = req.params.bookId;
-  
-      if (!Validator.isValidObjectId(id)) {
-        return res.status(400).send({ status: false, message: `BookId is invalid.` });
-      }
-  
-      let Book = await bookModel.findOne({ _id: id });
-  
-      if (!Book) {
-        return res.status(400).send({ status: false, msg: "No such book found" });
-      }
-  
-      if (Book.userId != userIdFromToken) { res.status(401).send({ status: false,message: `Unauthorized access! Owner info doesn't match` });
-        return;
+      let bookId = req.params.bookId;
+      let reviewId = req.params.reviewId;
+
+      if (!Validator.isValidRequestBody(req.params)) {
+        return res.status(400).send({status: false, message: "Invalid request parameters. Please provide query details"});
       }
 
-      const alreadyDeleted= await bookModel.findOne({_id: id, isDeleted: true})
-
-      if(alreadyDeleted) {
-        return res.status(400).send({ status: false, msg: `${alreadyDeleted.title} is already been deleted.` })
+       
+      if (!Validator.isValidObjectId(bookId)) {
+        return res.status(400).send({ status: false, message: `bookId is missing.` });
+      }
+      if (!Validator.isValidObjectId(reviewId)) {
+        return res.status(400).send({ status: false, message: `reviewId is missing.` });
       }
 
-      
-      
-      let data = await bookModel.findOne({ _id: id });
-      if (data.isDeleted == false) {
-        let Update = await bookModel.findOneAndUpdate(
-          { _id: id },
-          { isDeleted: true, deletedAt: Date() },
-          { new: true }
-        );
-        return res.status(200).send({status: true,message: "successfully deleted the book",data:Update});
-      } 
+      let deletedBook = await bookModel.findOne({_id:bookId, isDeleted:true})
+
+     if (deletedBook) {
+         return res.status(400).send({status:false, msg: "Book has already been deleted."})
+     }
+     
+     let reviewById= await reviewModel.findOne({_id: reviewId, isDeleted:true})
+
+     if (reviewById) {
+        return res.status(400).send({status:false, msg: "Review has already been deleted."})
+     }
+
+     let isReviewId= await reviewModel.findById({_id: reviewId})
+
+     if (bookId != isReviewId.bookId) {
+        return res.status(400).send({status:false, msg: "This review not belongs to this particular book."})
+     }
+
+    const deletedReview = await reviewModel.findOneAndUpdate({ _id: req.params.reviewId}, { isDeleted: true }, { new: true });
+
+    await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: -1 } });    
+
+    res.status(200).send({status: true, msg:"Deleted Sucessfullly", data: deletedReview})
 
     } catch (err) {
         console.log(err)
@@ -181,3 +185,4 @@ const updateReviews = async function (req, res) {
 
 module.exports.updateReviews =updateReviews
 module.exports.createReviewByBookId = createReviewByBookId
+module.exports.deleteReview = deleteReview
