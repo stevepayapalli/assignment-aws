@@ -4,9 +4,11 @@ const route = require("./Route/route.js")
 const { default: mongoose } = require('mongoose');
 const { Route } = require('express');
 const app = express();
+const multer = require('multer')
 
 
 app.use(bodyParser.json());
+app.use( multer().any())
 
 
 
